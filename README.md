@@ -22,7 +22,7 @@ Ja cansado de digitar linhas extenças usando **grep**, **sed**, **cut** etc... 
 	`$ mtf -sw <numero-da-linha> <palavra> <nova-palavra> <nome-do-arquivo>`
 	`$ mtf --swap <numero-da-linha> <palavra> <nova-palavra> <nome-do-arquivo>`
 #### Frase
-	Troca uma palavra ou frase por outra. Ao fazer o uso de frases, use aspa duplas.
+	Troca uma palavra ou frase por outra. Ao fazer o uso de frases, use aspas duplas.
 
 	`$ mtf -sw <numero-da-linha> <"Frase antiga"> <Essa sera a nova frase.> <nome-do-arquivo>`
 	`$ mtf --swap <numero-da-linha> <"Frase antiga"> <Essa sera a nova frase.> <nome-do-arquivo>`
