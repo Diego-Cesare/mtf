@@ -1,0 +1,231 @@
+#!/usr/bin/env python
+
+import argparse
+from pathlib import Path
+
+line_char = "─"
+sep_char = "│"
+
+
+class Colors:
+    """Destaca com cores sertas partes da saida"""
+
+    red = "\033[31m"
+    green = "\33[32m"
+    blue = "\33[34m"
+    res = "\033[0m"
+
+
+def create_line(char=line_char):
+    """Apenas cria uma linha horizontal com 70 caracteres"""
+    print(char * 70)
+
+
+def get_size(file):
+    file_path = Path(file)
+    size = file_path.stat().st_size
+    return size / 1024
+
+
+def enumerate_lines(file_name):
+    """Exibe o arquivo enumerando as linhas"""
+    create_line()
+    try:
+        with open(file_name, "r", encoding="utf-8", errors="ignore") as target:
+            for number, lines in enumerate(target, start=1):
+                print(f"{Colors.green}{number}{Colors.res}{sep_char} {lines.strip()}")
+        create_line()
+        print(
+            f"Displaying file: {Colors.blue}{file_name}{Colors.res} "
+            f"{sep_char} Size {get_size(file_name):.2f}Kb"
+        )
+
+    except FileNotFoundError:
+        print(
+            f"{Colors.red}ERROR{Colors.res}: The file {Colors.blue}{file_name}{Colors.res} was not found."
+        )
+    finally:
+        create_line()
+
+
+def search_lines(word, file_name):
+    """Procura e exibe as linhas com a palavra ou frase"""
+    if not Path(file_name).is_file():
+        print(f"File '{Colors.red}{file_name}{Colors.res}' not found.")
+        return
+
+    create_line()
+    found = False
+    with open(file_name, "r", encoding="utf-8", errors="ignore") as target:
+        for number, line in enumerate(target, start=1):
+            if word in line:
+                found = True
+                print(f"{Colors.green}{number}{Colors.res}. {line.strip()}")
+
+    if not found:
+        create_line()
+        print(
+            f"No matches found for '{Colors.red}{word}{Colors.res}' in {Colors.blue}{file_name}{Colors.res}."
+        )
+        create_line()
+    else:
+        create_line()
+        print(
+            f"Displayed lines with '{Colors.red}{word}{Colors.res}' from file {Colors.blue}{file_name}{Colors.res}"
+        )
+        create_line()
+
+
+def swap_this(line_num, word, new_word, file_name):
+    """Troca a palavra ou frase em uma linha especifica do arquivo"""
+    try:
+        with open(file_name, "r") as target:
+            lines = target.readlines()
+            lines[line_num - 1] = lines[line_num - 1].replace(word, new_word)
+
+        with open(file_name, "w") as target:
+            target.writelines(lines)
+    except PermissionError:
+        create_line()
+        print(
+            f"{Colors.red}Error:{Colors.res} Permission denied to modify "
+            f"'{Colors.green}{file_name}{Colors.res}'."
+        )
+        create_line()
+
+
+def delete_line(line_num, file_name):
+    """Deleta uma linha especifica do arquivo"""
+    try:
+        with open(file_name, "r") as target:
+            lines = target.readlines()
+
+        if line_num > len(lines) or line_num < 1:
+            print(
+                f"The line {Colors.red}{line_num}{Colors.res} does not exist in the file "
+                f"{Colors.blue}{file_name}{Colors.res}"
+            )
+            return
+
+        lines.pop(line_num - 1)
+
+        with open(file_name, "w") as target:
+            target.writelines(lines)
+        print(
+            f"Line {Colors.red}{line_num}{Colors.res} "
+            f"successfully deleted from file {Colors.blue}{file_name}{Colors.res}"
+        )
+
+    except FileNotFoundError:
+        create_line()
+        print(f"{Colors.red}Error:{Colors.res} File '{file_name}' not found.")
+        create_line()
+    except PermissionError:
+        create_line()
+        print(
+            f"{Colors.red}Error:{Colors.res} Permission denied to modify "
+            f"'{Colors.green}{file_name}{Colors.res}'."
+        )
+        create_line()
+    except Exception as e:
+        create_line()
+        print(f"{Colors.red}An unexpected error occurred:{Colors.res} {e}")
+        create_line()
+
+
+def add_line(line_num, new_line, file_name):
+    """Adiciona uma linha ao arquivo"""
+    try:
+        with open(file_name, "r") as target:
+            lines = target.readlines()
+
+        if line_num > len(lines) + 1 or line_num < 1:
+            print(f"You cannot add the line at position {line_num}.")
+            return
+
+        lines.insert(line_num - 1, new_line + "\n")
+
+        with open(file_name, "w") as target:
+            target.writelines(lines)
+        print(
+            f"A line has been added at position {Colors.red}{line_num}{Colors.res} "
+            f"file position {Colors.blue}{file_name}{Colors.res}."
+        )
+    except:
+        create_line()
+        print(
+            f"{Colors.red}ERRO{Colors.res}: "
+            f"Could not add {Colors.blue}{new_line}{Colors.res} "
+            f"to file {Colors.green}{file_name}{Colors.res}"
+        )
+        create_line()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--read",
+        "-r",
+        metavar="<file_name>",
+        help="Displays the file enumerating the lines.",
+    )
+
+    parser.add_argument(
+        "--search",
+        "-s",
+        nargs=2,
+        metavar=('<word> To do this use "New phrase"', "<file_name>"),
+        help="Search and show only lines that contain the keyword.",
+    )
+
+    parser.add_argument(
+        "--swap",
+        "-sw",
+        nargs=4,
+        type=str,
+        metavar=(
+            "<line-number>",
+            '<word> or <"word other words">',
+            '<new_word> or <"new_word other words">',
+            "<file_name>",
+        ),
+        help="Replaces one word with another on a specific line in a file.",
+    )
+
+    parser.add_argument(
+        "--delete",
+        "-d",
+        nargs=2,
+        metavar=("<line_num>", "<file_name>"),
+        help="Delete a specific line from the file",
+    )
+
+    parser.add_argument(
+        "--add",
+        "-a",
+        nargs=3,
+        metavar=("<line_num>", '<new_line> To do this use "New phrase"', "<file_name>"),
+        help="Add a line to the file at a specific position",
+    )
+
+    args = parser.parse_args()
+
+    if args.read:
+        enumerate_lines(args.read)
+    if args.search:
+        word, file_name = args.search
+        search_lines(str(word), file_name)
+    if args.swap:
+        line_num, word, new_word, file_name = args.swap
+        swap_this(int(line_num), str(word), str(new_word), file_name)
+    if args.delete:
+        line_num, file_name = args.delete
+        delete_line(int(line_num), file_name)
+    if args.add:
+        line_num, new_line, file_name = args.add
+        add_line(int(line_num), str(new_line), file_name)
+
+
+if __name__ == "__main__":
+    main()
