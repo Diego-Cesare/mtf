@@ -12,8 +12,15 @@ class Colors:
 
     red = "\033[31m"
     green = "\33[32m"
+    yellow = "\33[33m"
     blue = "\33[34m"
+    magenta = "\33[35m"
+    cyan = "\33[36m"
     res = "\033[0m"
+
+
+def colorize(color, text):
+    return f"{color}{text}{Colors.res}"
 
 
 def create_line(char=line_char):
@@ -33,16 +40,16 @@ def enumerate_lines(file_name):
     try:
         with open(file_name, "r", encoding="utf-8", errors="ignore") as target:
             for number, lines in enumerate(target, start=1):
-                print(f"{Colors.green}{number}{Colors.res}{sep_char} {lines.strip()}")
+                print(f"{colorize(Colors.yellow, number)}{sep_char} {lines.strip()}")
         create_line()
         print(
-            f"Displaying file: {Colors.blue}{file_name}{Colors.res} "
+            f"Displaying file: {colorize(Colors.green, file_name)} "
             f"{sep_char} Size {get_size(file_name):.2f}Kb"
         )
 
     except FileNotFoundError:
         print(
-            f"{Colors.red}ERROR{Colors.res}: The file {Colors.blue}{file_name}{Colors.res} was not found."
+            f"{colorize(Colors.red, "ERROR")}: The file {colorize(Colors.blue, file_name)} was not found."
         )
     finally:
         create_line()
@@ -51,7 +58,7 @@ def enumerate_lines(file_name):
 def search_lines(word, file_name):
     """Procura e exibe as linhas com a palavra ou frase"""
     if not Path(file_name).is_file():
-        print(f"File '{Colors.red}{file_name}{Colors.res}' not found.")
+        print(f"File '{colorize(Colors.red, file_name)}' not found.")
         return
 
     create_line()
@@ -60,18 +67,18 @@ def search_lines(word, file_name):
         for number, line in enumerate(target, start=1):
             if word in line:
                 found = True
-                print(f"{Colors.green}{number}{Colors.res}. {line.strip()}")
+                print(f"{colorize(Colors.magenta, number)}. {line.strip()}")
 
     if not found:
         create_line()
         print(
-            f"No matches found for '{Colors.red}{word}{Colors.res}' in {Colors.blue}{file_name}{Colors.res}."
+            f"No matches found for '{colorize(Colors.red, word)}' in {colorize(Colors.blue, file_name)}."
         )
         create_line()
     else:
         create_line()
         print(
-            f"Displayed lines with '{Colors.red}{word}{Colors.res}' from file {Colors.blue}{file_name}{Colors.res}"
+            f"Displayed lines with '{colorize(Colors.red, word)}' from file {colorize(Colors.blue, file_name)}"
         )
         create_line()
 
@@ -88,8 +95,8 @@ def swap_this(line_num, word, new_word, file_name):
     except PermissionError:
         create_line()
         print(
-            f"{Colors.red}Error:{Colors.res} Permission denied to modify "
-            f"'{Colors.green}{file_name}{Colors.res}'."
+            f'{colorize(Colors.red, "Error")}: Permission denied to modify '
+            f'\'{colorize(Colors.green, file_name)}\'.'
         )
         create_line()
 
@@ -102,8 +109,8 @@ def delete_line(line_num, file_name):
 
         if line_num > len(lines) or line_num < 1:
             print(
-                f"The line {Colors.red}{line_num}{Colors.res} does not exist in the file "
-                f"{Colors.blue}{file_name}{Colors.res}"
+                f"The line {colorize(Colors.red, line_num)} does not exist in the file "
+                f"{colorize(Colors.blue, file_name)}"
             )
             return
 
@@ -112,24 +119,24 @@ def delete_line(line_num, file_name):
         with open(file_name, "w") as target:
             target.writelines(lines)
         print(
-            f"Line {Colors.red}{line_num}{Colors.res} "
-            f"successfully deleted from file {Colors.blue}{file_name}{Colors.res}"
+            f"Line {colorize(Colors.red, line_num)} "
+            f"successfully deleted from file {colorize(Colors.blue, file_name)}"
         )
 
     except FileNotFoundError:
         create_line()
-        print(f"{Colors.red}Error:{Colors.res} File '{file_name}' not found.")
+        print(f"{colorize(Colors.red, "ERRO")}: File '{file_name}' not found.")
         create_line()
     except PermissionError:
         create_line()
         print(
-            f"{Colors.red}Error:{Colors.res} Permission denied to modify "
-            f"'{Colors.green}{file_name}{Colors.res}'."
+            f"{colorize(Colors.red, "ERRO")}: Permission denied to modify "
+            f"'{colorize(Colors.green, file_name)}'."
         )
         create_line()
     except Exception as e:
         create_line()
-        print(f"{Colors.red}An unexpected error occurred:{Colors.res} {e}")
+        print(f"{colorize(Colors.red, "An unexpected error occurred")}: {e}")
         create_line()
 
 
@@ -148,15 +155,15 @@ def add_line(line_num, new_line, file_name):
         with open(file_name, "w") as target:
             target.writelines(lines)
         print(
-            f"A line has been added at position {Colors.red}{line_num}{Colors.res} "
-            f"file position {Colors.blue}{file_name}{Colors.res}."
+            f"A line has been added at position {colorize(Colors.red, line_num)} "
+            f"file position {colorize(Colors.blue, file_name)}."
         )
     except:
         create_line()
         print(
-            f"{Colors.red}ERRO{Colors.res}: "
-            f"Could not add {Colors.blue}{new_line}{Colors.res} "
-            f"to file {Colors.green}{file_name}{Colors.res}"
+            f"{colorize(Colors.red, "ERROR")}: "
+            f"Could not add {colorize(Colors.red, new_line)} "
+            f"to file {colorize(Colors.green, file_name)}"
         )
         create_line()
 
