@@ -52,6 +52,16 @@ def enumerate_lines(file_name):
         create_line()
 
 
+def create_arc(file_name):
+    file_path = Path(file_name)
+
+    if file_path.is_file():
+        print(f'File {colorize(magenta, file_name)} already exists.')
+    else:
+        file_path.touch()
+        print(f'{colorize(green, file_name)} created successfully.')
+
+
 def search_lines(word, file_name):
     """Procura e exibe as linhas com a palavra ou frase"""
     if not Path(file_name).is_file():
@@ -147,7 +157,8 @@ def add_line(line_num, new_line, file_name):
             print(f"You cannot add the line at position {line_num}.")
             return
 
-        lines.insert(line_num - 1, new_line + "\n")
+        for i, new_line in enumerate(new_line):
+            lines.insert(line_num - 1 + i, new_line + "\n")
 
         with open(file_name, "w") as target:
             target.writelines(lines)
@@ -173,6 +184,14 @@ def main():
         "-r",
         metavar="<file_name>",
         help="Displays the file enumerating the lines.",
+    )
+
+    parser.add_argument(
+        "--create",
+        "-c",
+        type=str,
+        metavar="<file_name>",
+        help="Creates an empty file.",
     )
 
     parser.add_argument(
@@ -217,6 +236,8 @@ def main():
 
     if args.read:
         enumerate_lines(args.read)
+    if args.create:
+        create_arc(args.create)
     if args.search:
         word, file_name = args.search
         search_lines(str(word), file_name)
@@ -228,7 +249,8 @@ def main():
         delete_line(int(line_num), file_name)
     if args.add:
         line_num, new_line, file_name = args.add
-        add_line(int(line_num), str(new_line), file_name)
+        add_line(int(line_num), new_line.split(";"), file_name)
+
 
 
 if __name__ == "__main__":
