@@ -14,6 +14,11 @@ Ja cansado de digitar linhas extenças usando **grep**, **sed**, **cut** etc... 
      
 	 `$ mtf -r <nome-do-arquivo>` 
 	 `$ mtf --read <nome-do-arquivo>`
+
+#### Criar um arquivo
+
+	`$ mtf -c <nome-do-arquivo>`
+	`$ mtf --create <nome-do arquivo>`
 ### Substituir palavra ou frase.
 #### Palavra
 
@@ -38,6 +43,10 @@ Ja cansado de digitar linhas extenças usando **grep**, **sed**, **cut** etc... 
 
 	`$ mtf -a <numero-da-linha> <"Nova frase da nova linha"> <nome-do-arquivo>`
 	`$ mtf --add <numero-da-linha> <"Nova frase da nova linha"> <nome-do-arquivo>`
+
+	Com o uso de ; sera possivel adicionar varias linhas ao arquivo.
+	
+	`$ mtf -a <numero-da-linha> <"Nova frase da nova linha;Frase na linha a baixo"> <nome-do-arquivo>`
 #### Buscar por palavra
 
 	Ira exibir todas ass linha que contem a palavra indicada pelo usuario.
