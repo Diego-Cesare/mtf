@@ -6,7 +6,9 @@ from pathlib import Path
 line_char = "─"
 sep_char = "│"
 
+bg_white = "\33[47m"
 
+black = "\33[30m"
 red = "\033[31m"
 green = "\33[32m"
 yellow = "\33[33m"
@@ -40,7 +42,7 @@ def enumerate_lines(file_name):
                 print(f"{colorize(yellow, number)}{sep_char} {lines.strip()}")
         create_line()
         print(
-            f"Displaying file: {colorize(green, file_name)} "
+            f"Displaying file: {colorize(bg_white,colorize(black, file_name))} "
             f"{sep_char} Size {get_size(file_name):.2f}Kb"
         )
 
@@ -55,11 +57,23 @@ def enumerate_lines(file_name):
 def create_arc(file_name):
     file_path = Path(file_name)
 
-    if file_path.is_file():
-        print(f'File {colorize(magenta, file_name)} already exists.')
-    else:
-        file_path.touch()
-        print(f'{colorize(green, file_name)} created successfully.')
+    try:
+        if file_path.is_file():
+            create_line()
+            print(f"File {colorize(magenta, file_name)} already exists.")
+            create_line()
+        else:
+            file_path.touch()
+            create_line()
+            print(f"{colorize(green, file_name)} created successfully.")
+            create_line()
+    except PermissionError:
+        create_line()
+        print(
+            f"{colorize(red, "ERRO")}: Permission denied to modify "
+            f"'{colorize(green, file_name)}'."
+        )
+        create_line()
 
 
 def search_lines(word, file_name):
@@ -103,7 +117,7 @@ def swap_this(line_num, word, new_word, file_name):
         create_line()
         print(
             f'{colorize(red, "Error")}: Permission denied to modify '
-            f'\'{colorize(green, file_name)}\'.'
+            f"'{colorize(green, file_name)}'."
         )
         create_line()
 
@@ -115,20 +129,24 @@ def delete_line(line_num, file_name):
             lines = target.readlines()
 
         if line_num > len(lines) or line_num < 1:
+            create_line()
             print(
                 f"The line {colorize(red, line_num)} does not exist in the file "
                 f"{colorize(blue, file_name)}"
             )
+            create_line()
             return
 
         lines.pop(line_num - 1)
 
         with open(file_name, "w") as target:
             target.writelines(lines)
+        create_line()
         print(
             f"Line {colorize(red, line_num)} "
             f"successfully deleted from file {colorize(blue, file_name)}"
         )
+        create_line()
 
     except FileNotFoundError:
         create_line()
@@ -154,7 +172,9 @@ def add_line(line_num, new_line, file_name):
             lines = target.readlines()
 
         if line_num > len(lines) + 1 or line_num < 1:
+            create_line()
             print(f"You cannot add the line at position {line_num}.")
+            create_line()
             return
 
         for i, new_line in enumerate(new_line):
@@ -162,10 +182,12 @@ def add_line(line_num, new_line, file_name):
 
         with open(file_name, "w") as target:
             target.writelines(lines)
+        create_line()
         print(
             f"A line has been added at position {colorize(red, line_num)} "
             f"file position {colorize(blue, file_name)}."
         )
+        create_line()
     except:
         create_line()
         print(
@@ -176,61 +198,44 @@ def add_line(line_num, new_line, file_name):
         create_line()
 
 
+def comment_line(line_num, comment, file_name):
+    with open(file_name, "r") as file:
+        lines = file.readlines()
+
+    for i in range(len(lines)):
+        if i == line_num - 1:
+            lines[i] = comment + lines[i]
+
+    with open(file_name, "w") as file:
+        file.writelines(lines)
+
+
+def add_args(parser, arg_a, arg_b, args, types, meta, helps):
+    return parser.add_argument(
+        arg_a,
+        arg_b,
+        nargs=args,
+        type=types,
+        metavar=meta,
+        help=helps,
+    )
+
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "--read",
-        "-r",
-        metavar="<file_name>",
-        help="Displays the file enumerating the lines.",
-    )
+    add_args(parser, "--read", "-r", None, None, "<file_name>", "Displays the file enumerating the lines.")
 
-    parser.add_argument(
-        "--create",
-        "-c",
-        type=str,
-        metavar="<file_name>",
-        help="Creates an empty file.",
-    )
+    add_args(parser, "--create", "-c", None, str, "<file_name>", "Creates an empty file.")
 
-    parser.add_argument(
-        "--search",
-        "-s",
-        nargs=2,
-        metavar=('<word> To do this use "New phrase"', "<file_name>"),
-        help="Search and show only lines that contain the keyword.",
-    )
+    add_args(parser, "--search", "-s", 2, None, "<word> To do this use \"New phrase\"", "Search and show only lines that contain the keyword.")
 
-    parser.add_argument(
-        "--swap",
-        "-sw",
-        nargs=4,
-        type=str,
-        metavar=(
-            "<line-number>",
-            '<word> or <"word other words">',
-            '<new_word> or <"new_word other words">',
-            "<file_name>",
-        ),
-        help="Replaces one word with another on a specific line in a file.",
-    )
+    add_args(parser, "--swap", "-sw", 4, str, "<line-number> <word> or \"<word other words>\" <new_word> or \"<new_word other words>\" <file_name>", "Replaces one word with another on a specific line in a file.")
 
-    parser.add_argument(
-        "--delete",
-        "-d",
-        nargs=2,
-        metavar=("<line_num>", "<file_name>"),
-        help="Delete a specific line from the file",
-    )
+    add_args(parser, "--delete", "-d", 2, None, "<line_num> <file_name>", "Delete a specific line from the file")
 
-    parser.add_argument(
-        "--add",
-        "-a",
-        nargs=3,
-        metavar=("<line_num>", '<new_line> To do this use "New phrase"', "<file_name>"),
-        help="Add a line to the file at a specific position",
-    )
+    add_args(parser, "--add", "-a", 3, None, "<line_num> <new_line> <new_line> To do this use \"New phrase\" <file_name>", "Add a line to the file at a specific position")
+
+    add_args(parser, "--comment", "-cm", 3, None, "<line_num> <comment>, <file_name>", "Adds a comment at the beginning of the line.")
 
     args = parser.parse_args()
 
@@ -250,7 +255,9 @@ def main():
     if args.add:
         line_num, new_line, file_name = args.add
         add_line(int(line_num), new_line.split(";"), file_name)
-
+    if args.comment:
+        line_num, comment, file_name = args.comment
+        comment_line(int(line_num), comment, file_name)
 
 
 if __name__ == "__main__":
