@@ -229,13 +229,13 @@ def main():
 
     add_args(parser, "--search", "-s", 2, None, "<word> To do this use \"New phrase\"", "Search and show only lines that contain the keyword.")
 
-    add_args(parser, "--swap", "-sw", 4, str, "<line-number> <word> or \"<word other words>\" <new_word> or \"<new_word other words>\" <file_name>", "Replaces one word with another on a specific line in a file.")
+    add_args(parser, "--swap", "-sw", 4, str, ("<line-number>", "<word>", "<new-world>", "file-name"), "Replaces one word with another on a specific line in a file.")
 
     add_args(parser, "--delete", "-d", 2, None, "<line_num> <file_name>", "Delete a specific line from the file")
 
-    add_args(parser, "--add", "-a", 3, None, "<line_num> <new_line> <new_line> To do this use \"New phrase\" <file_name>", "Add a line to the file at a specific position")
+    add_args(parser, "--add", "-a", 3, None, ("<line_num>", "<new_line>", "<new_line>"), "Add a line to the file at a specific position")
 
-    add_args(parser, "--comment", "-cm", 3, None, "<line_num> <comment>, <file_name>", "Adds a comment at the beginning of the line.")
+    add_args(parser, "--comment", "-cm", 3, None, ("<line_num>", "<comment>", "<file_name>"), "Adds a comment at the beginning of the line.")
 
     args = parser.parse_args()
 
