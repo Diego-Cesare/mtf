@@ -4,7 +4,7 @@
 # Description: Um script Python para manipulação de arquivos (leitura, busca, substituição, etc.)
 
 pkgname=mtf
-pkgver=1.0
+pkgver=1.1
 pkgrel=1
 pkgdesc="Um script Python para manipulação de arquivos (leitura, busca, substituição, etc.)"
 arch=('any')
@@ -12,7 +12,7 @@ url="https://github.com/Diego-Cesare/mtf"
 license=('GPL')
 depends=()
 source=("$pkgname-$pkgver.tar.gz"::"https://github.com/Diego-Cesare/mtf/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('SKIP')  # Você deve calcular o checksum real do arquivo tar.gz gerado
+sha256sums=('SKIP')
 
 build() {
     cd "$srcdir/$pkgname-$pkgver"
@@ -35,6 +35,6 @@ package() {
 # Isso será mostrado após a instalação do pacote
 post_install() {
     echo "O pacote $pkgname foi instalado com sucesso!"
-    echo "Você pode usar o script com o comando 'mtf'."
+    echo "Você pode intender o uso do script com o comando 'mtf --help'."
 }
 
