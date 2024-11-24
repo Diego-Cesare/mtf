@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+import shutil
 import argparse
 from pathlib import Path
 
@@ -210,6 +212,47 @@ def comment_line(line_num, comment, file_name):
         file.writelines(lines)
 
 
+
+def create_dir(dir_name):
+    try:
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+            create_line()
+            print(f"'{colorize(green, dir_name)}' directory created successfully.")
+            create_line()
+        else:
+            create_line()
+            print(f"'{colorize(red, dir_name)}' directory already exists.")
+            create_line()
+    except PermissionError:
+        create_line()
+        print(
+            f"{colorize(red, "ERRO")}: Permission denied to modify "
+            f"'{colorize(green, file_name)}'."
+        )
+        create_line()
+
+
+def delete_dir(dir_name):
+    try:
+        if os.path.exists(dir_name):
+            shutil.rmtree(dir_name)
+            create_line()
+            print(f"'{colorize(green, dir_name)}' directory deleted successfully.")
+            create_line()
+        else:
+            create_line()
+            print(f"'{colorize(red, dir_name)}' directory does not exist.")
+            create_line()
+    except PermissionError:
+        create_line()
+        print(
+            f"{colorize(red, "ERRO")}: Permission denied to modify "
+            f"'{colorize(green, file_name)}'."
+        )
+        create_line()
+
+
 def add_args(parser, arg_a, arg_b, args, types, meta, helps):
     return parser.add_argument(
         arg_a,
@@ -229,13 +272,18 @@ def main():
 
     add_args(parser, "--search", "-s", 2, None, "<word> To do this use \"New phrase\"", "Search and show only lines that contain the keyword.")
 
-    add_args(parser, "--swap", "-sw", 4, str, ("<line-number>", "<word>", "<new-world>", "file-name"), "Replaces one word with another on a specific line in a file.")
+    add_args(parser, "--swap", "-sw", 4, None, ("<line_number>", "<word>", "<new_world>", "file_name"), "Replaces one word with another on a specific line in a file.")
 
     add_args(parser, "--delete", "-d", 2, None, "<line_num> <file_name>", "Delete a specific line from the file")
 
     add_args(parser, "--add", "-a", 3, None, ("<line_num>", "<new_line>", "<new_line>"), "Add a line to the file at a specific position")
 
     add_args(parser, "--comment", "-cm", 3, None, ("<line_num>", "<comment>", "<file_name>"), "Adds a comment at the beginning of the line.")
+
+    add_args(parser, "--dir", "-cd", None, None, "<dir_name>", "Create a directory")
+
+    add_args(parser, "--rmdir", "-rd", None, None, "<dir_name>", "Delete a directory")
+
 
     args = parser.parse_args()
 
@@ -258,6 +306,10 @@ def main():
     if args.comment:
         line_num, comment, file_name = args.comment
         comment_line(int(line_num), comment, file_name)
+    if args.dir:
+        create_dir(args.dir)
+    if args.rmdir:
+        delete_dir(args.rmdir)
 
 
 if __name__ == "__main__":
