@@ -36,21 +36,24 @@ def get_size(file):
 
 
 def enumerate_lines(file_name):
-    """Exibe o arquivo enumerando as linhas"""
+    """Exibe o arquivo enumerando as linhas em duas colunas."""
     create_line()
     try:
         with open(file_name, "r", encoding="utf-8", errors="ignore") as target:
-            for number, lines in enumerate(target, start=1):
-                print(f"{colorize(yellow, number)}{sep_char} {lines.strip()}")
+            for number, line in enumerate(target, start=1):
+                left_column = colorize(yellow, f"{number:>4}")
+                right_column = line.strip()
+                print(f"{left_column} | {right_column}")
+        
         create_line()
         print(
-            f"Displaying file: {colorize(bg_white,colorize(black, file_name))} "
-            f"{sep_char} Size {get_size(file_name):.2f}Kb"
+            f"Displaying file: {colorize(red, file_name)} "
+            f"| Size {get_size(file_name):.2f}Kb"
         )
 
     except FileNotFoundError:
         print(
-            f"{colorize(red, "ERROR")}: The file {colorize(blue, file_name)} was not found."
+            f"{colorize(red, 'ERROR')}: The file {colorize(blue, file_name)} was not found."
         )
     finally:
         create_line()
@@ -72,14 +75,14 @@ def create_arc(file_name):
     except PermissionError:
         create_line()
         print(
-            f"{colorize(red, "ERRO")}: Permission denied to modify "
+            f"{colorize(red, 'ERRO')}: Permission denied to modify "
             f"'{colorize(green, file_name)}'."
         )
         create_line()
 
 
 def search_lines(word, file_name):
-    """Procura e exibe as linhas com a palavra ou frase"""
+    """Procura e exibe as linhas com a palavra ou frase em duas colunas."""
     if not Path(file_name).is_file():
         print(f"File '{colorize(red, file_name)}' not found.")
         return
@@ -90,7 +93,17 @@ def search_lines(word, file_name):
         for number, line in enumerate(target, start=1):
             if word in line:
                 found = True
-                print(f"{colorize(magenta, number)}{sep_char} {line.strip()}")
+                # Destacar a palavra
+                highlighted_line = ""
+                parts = line.split(word)
+                for i, part in enumerate(parts):
+                    highlighted_line += part
+                    if i < len(parts) - 1:
+                        highlighted_line += colorize(green, word)
+                
+                left_column = colorize(blue, f"{number:>4}")
+                right_column = highlighted_line.strip()
+                print(f"{left_column} | {right_column}")
 
     if not found:
         create_line()
@@ -101,7 +114,7 @@ def search_lines(word, file_name):
     else:
         create_line()
         print(
-            f"Displayed lines with '{colorize(red, word)}' from file {colorize(blue, file_name)}"
+            f"Displayed lines with '{colorize(green, word)}' from file {colorize(blue, file_name)}"
         )
         create_line()
 
@@ -152,12 +165,12 @@ def delete_line(line_num, file_name):
 
     except FileNotFoundError:
         create_line()
-        print(f"{colorize(red, "ERRO")}: File '{file_name}' not found.")
+        print(f"{colorize(red, 'ERRO')}: File '{file_name}' not found.")
         create_line()
     except PermissionError:
         create_line()
         print(
-            f"{colorize(red, "ERRO")}: Permission denied to modify "
+            f"{colorize(red, 'ERRO')}: Permission denied to modify "
             f"'{colorize(green, file_name)}'."
         )
         create_line()
@@ -227,8 +240,8 @@ def create_dir(dir_name):
     except PermissionError:
         create_line()
         print(
-            f"{colorize(red, "ERRO")}: Permission denied to modify "
-            f"'{colorize(green, file_name)}'."
+            f"{colorize(red, 'ERRO')}: Permission denied to modify "
+            f"'{colorize(green, dir_name)}'."
         )
         create_line()
 
@@ -247,8 +260,8 @@ def delete_dir(dir_name):
     except PermissionError:
         create_line()
         print(
-            f"{colorize(red, "ERRO")}: Permission denied to modify "
-            f"'{colorize(green, file_name)}'."
+            f"{colorize(red, 'ERRO')}: Permission denied to modify "
+            f"'{colorize(green, dir_name)}'."
         )
         create_line()
 

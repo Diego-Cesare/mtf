@@ -4,7 +4,7 @@
 # Description: Um script Python para manipulação de arquivos (leitura, busca, substituição, etc.)
 
 pkgname=mtf
-pkgver=1.1
+pkgver=1.2
 pkgrel=1
 pkgdesc="Um script Python para manipulação de arquivos (leitura, busca, substituição, etc.)"
 arch=('any')
